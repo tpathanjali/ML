@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import datetime as dt
 
- 
+#need to preprocess properly 
 
 from sklearn.preprocessing import MinMaxScaler
 
