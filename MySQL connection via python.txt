@@ -1,0 +1,29 @@
+--step-1:
+--Execute the below code in MySQL Shell
+--It will prompt for password of root. save the password for future purposes
+\connect --mysql root@localhost:3306
+--Login to MYSQL 8.0 command line client using the password
+--run the below command for creating a database
+create database pathanjali;
+use pathanjali;
+--to create a sample table
+CREATE TABLE example ( id smallint unsigned not null auto_increment, name varchar(20) not null, constraint pk_example primary key (id) );
+INSERT INTO example ( id, name ) VALUES ( null, 'Sample data' );
+--check the size of databases
+SELECT table_schema "DB Name",
+        ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) "DB Size in MB" 
+FROM information_schema.tables 
+GROUP BY table_schema;
+
+--sample connection string in pycharm
+from sqlalchemy import create_engine
+engine = create_engine("mysql://root:password@127.0.0.1/databasename")
+con = engine.connect()
+import pandas as pd
+df = pd.DataFrame([[1,'pathanjali'],[2,'Rupa'],[3,'Budiki']],columns=['idnum','name'])
+df.to_sql(name='example2',con=con,if_exists='append',index=False)#insert into already existing table
+df.to_sql(name='example3',con=con,if_exists='replace',index=False)#create a table if it doesn't exist
+df_read = pd.read_sql('SELECT * FROM example2', con=con)#read data from mysql db to dataframe
+print(df_read)
+con.close()
+
