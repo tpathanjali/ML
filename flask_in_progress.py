@@ -143,7 +143,10 @@ print('grid is ',grid)
 X_train, X_test, y_train, y_test = train_test_split(df,df['price'], test_size=0.25, random_state=42)
 print('xtrain columns',X_train.columns)
 grid.fit(X_train, y_train)
-
+#error:
+#ValueError: Invalid parameter C for estimator Pipeline(memory=None,
+ #    steps=[('preprocessing', preprocessing()), ('svr', SVR(C=1.0, cache_size=200, coef0=0.0, degree=3, epsilon=0.1, gamma='auto',
+ # kernel='rbf', max_iter=-1, shrinking=True, tol=0.001, verbose=False))]). Check the list of available parameters with `estimator.get_params().keys()`.
 k=preprocessing()
 k.transform(X_train)
 
