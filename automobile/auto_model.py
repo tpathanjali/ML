@@ -17,6 +17,7 @@ from sklearn.svm import SVR
 from sklearn.pipeline import make_pipeline
 import dill as pickle #dill has advantage to serialize custom transformers
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.model_selection import GridSearchCV,RandomizedSearchCV
 
 class preprocessing(BaseEstimator, TransformerMixin):
         """BaseEstimator, TransformerMixin helps in inheriting fit method
@@ -71,9 +72,8 @@ class preprocessing(BaseEstimator, TransformerMixin):
 def build_and_train():
     df = pd.read_csv('C:\\Users\\sagar\\Documents\\automobile.csv',names=['symboling','normalized_losses','make','fuel_type','aspiration','num_of_doors','body_style','drive_wheels','engine_location','wheel_base','length','width','height','curb_weight','engine_type',
 'num_of_cylinders','engine_size','fuel_system','bore','stroke','compression_ratio','horsepower','peak_rpm','city_mpg','highway_mpg','price'])
-   #hard coded SVR hyper parameters as obtained in full analysis.
-    pipe = make_pipeline(preprocessing(),SVR(C=9.96, cache_size=200, coef0=0.0, degree=3, epsilon=0.1, gamma='auto',
-  kernel='rbf', max_iter=-1, shrinking=True, tol=0.001, verbose=False))
+    param_grid = {'C':np.arange(0.01,10,0.05)}
+    pipe = make_pipeline(preprocessing(),GridSearchCV(SVR(),param_grid, cv=10))
     #print(pipe)
     df.replace(to_replace='?',value=np.nan,inplace=True)
     df.dropna(subset=['num_of_doors','bore', 'stroke','horsepower', 'peak_rpm','price'],inplace=True)
