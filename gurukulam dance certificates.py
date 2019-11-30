@@ -44,8 +44,9 @@ maxPieChartSize = 8
 maxMarks = 40
 
 #Below code will read data from excel
-df = pd.read_csv("D:/gurukulam marks program/results.csv")
-df_graphs=df.drop(['total marks'],axis=1)
+df = pd.read_csv("D:/gurukulam marks program/dance/Gurukulam_DanceExam results.csv")
+df_graphs=df.drop(['total marks', 'Attitude'],axis=1)
+df.columns
 numGraphs = df_graphs.shape[0]
 
 for x in range(numGraphs):
@@ -55,7 +56,7 @@ for x in range(numGraphs):
     
 
     ######################   IMPORTANT   #############################
-    parameters = row["Sruthi":"Service"]
+    parameters = row["Aangikam":"Grit"]
     #parameters=parameters.drop("total marks")
     ######################   IMPORTANT   #############################
 
@@ -86,22 +87,20 @@ for x in range(numGraphs):
     ax.set_ylim(0,25)
     # ax.set_yticklabels(np.arange(0,20,1))    
     plt.suptitle("this is test",y=1.05)
-    plt.savefig("D:/gurukulam marks program/graphs/" + str(row["student"]) +
-                str(row["category"]) + ".png", dpi=300, format="png")
+    plt.savefig("D:/gurukulam marks program/dance/graphs/" + str(row["student"]) + ".png", dpi=300, format="png")
     plt.clf()
     #, transparent=True
 
 print("graphs creation complete")
 ##--graph generation code over--#
 ##-- this code generates images of individual marks--#	
-header_one=['Sruthi', 'Laya', 'Melody', 'Diction',
-        'Total marks']
-header_two=['Attendance', 'Homework',  'Grit', 'Service', 'Total marks']
+header_one=['Aangikam','Vaachikam','Aahariam','Satvikam','total marks']
+header_two=['Attendance', 'Practice',  'Service', 'Grit','Attitude']
 #--unique name is combination of name and category(vocal,violin)
 def marks_snapshot(marks,uniquename):
     samp_data=marks
-    samp_data_one=[samp_data[3:8]]
-    samp_data_two=[samp_data[8:13]]
+    samp_data_one=[samp_data[2:7]]
+    samp_data_two=[samp_data[7:13]]
     
     plt.subplots(figsize=(16,6))
     
@@ -123,18 +122,18 @@ def marks_snapshot(marks,uniquename):
     the_table2.set_fontsize(24)
     the_table2.scale(2, 2)
     #plt.subplots_adjust(left=1, bottom=1)
-    plt.savefig('D:/gurukulam marks program/marks/'+ uniquename +'.png')
+    plt.savefig('D:/gurukulam marks program/dance/marks/'+ uniquename +'.png')
     plt.close()
     
-def name_creator(name, year, category):
+def name_creator(name, year):
     img=Image.new('RGB',(1152,60),color='white')
     d=ImageDraw.Draw(img)
     fnt=ImageFont.truetype('C:/Windows/Fonts/Arial.ttf',35)
-    title="Name: " + str(name) +"   Year: " + str(year ) + '   Category: '+ str(category)
+    title="Name: " + str(name) +"   Year: " + str(year )
     #plt.suptitle(title,y=1.05)
     d.text((50,10),title, fill=(0,0,0),font=fnt)
-    uniquename=str(name)+str(category)
-    img.save('D:/gurukulam marks program/names/'+uniquename+'.png')
+    uniquename=str(name)
+    img.save('D:/gurukulam marks program/dance/names/'+uniquename+'.png')
     
 #to resize the images 
 def vconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
@@ -144,18 +143,18 @@ def vconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
     return cv2.vconcat(im_list_resize)
    
 def image_combiner(uniquename):
-    im1 = cv2.imread('D:/gurukulam marks program/names/'+uniquename+'.png')
-    im2 = cv2.imread('D:/gurukulam marks program/graphs/'+uniquename+'.png')
-    im3 = cv2.imread('D:/gurukulam marks program/marks/'+uniquename+'.png')
+    im1 = cv2.imread('D:/gurukulam marks program/dance/names/'+uniquename+'.png')
+    im2 = cv2.imread('D:/gurukulam marks program/dance/graphs/'+uniquename+'.png')
+    im3 = cv2.imread('D:/gurukulam marks program/dance/marks/'+uniquename+'.png')
     im_v_resize = vconcat_resize_min([im1, im2, im3])
-    cv2.imwrite('D:/gurukulam marks program/backpage/'+uniquename+'.png', im_v_resize)
+    cv2.imwrite('D:/gurukulam marks program/dance/backpage/'+uniquename+'.png', im_v_resize)
     print('combined image' )
     
-def pdf_creator(uniqename):
+def pdf_creator(name):
     # storing image path 
-    img_path = 'D:/gurukulam marks program/backpage/'+uniquename+'.png'     
+    img_path = 'D:/gurukulam marks program/dance/backpage/'+name+'.png'     
     # storing pdf path 
-    pdf_path = 'D:/gurukulam marks program/backpage/'+uniquename+'.pdf'     
+    pdf_path = 'D:/gurukulam marks program/dance/backpage/'+name+'.pdf'     
     # opening image 
     image = Image.open(img_path)      
     # converting into chunks using img2pdf 
@@ -193,19 +192,21 @@ for i in  range(1,len(df)):
     samp_data=list(df.iloc[i])
     uniquename=str(df.iloc[i][0])+str(df.iloc[i][1])
     name=str(df.iloc[i][0])
-    category=str(df.iloc[i][1])
-    year=str(df.iloc[i][2])
-    marks_snapshot(samp_data,uniquename)
-    name_creator(name, year, category)
-    image_combiner(uniquename)
-    pdf_creator(uniquename)
+    year=str(df.iloc[i][1])
+    marks_snapshot(samp_data,name)
+    name_creator(name, year)
+    image_combiner(name)
+    pdf_creator(name)
     print('completed for ',str(df.iloc[i][0]),' ',str(df.iloc[i][1]))
 print('exported marks for all students as pictures')
 
 
 df['Grade']=df['total marks'].apply(grader)
-final=df[['student','Year','category','Grade','total marks']]
+final=df[['student','Year','Grade','total marks']]
 final['date']='Dec 1 2019'
-final.to_csv('D:/gurukulam marks program/frontend.csv',index=False)
+final['category']='Kuchipudi Dance'
+final=final[['student','Year','category','Grade','total marks','date']]
+
+final.to_csv('D:/gurukulam marks program/dance/frontend.csv',index=False)
 
 
